@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solo Level: Neon RPG</title>
+<style>
+:root{--neon:#a855f7;--blue:#38bdf8;--red:#ef4444;--gold:#fbbf24;--bg:#07070d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 500px at 50% -10%,#1b1030,var(--bg));color:#e2e8f0;
+font-family:"Segoe UI",Arial,sans-serif;min-height:100vh;padding:12px;
+background-attachment:fixed}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;
+background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(120,80,255,.03) 3px 4px)}
+h1,h2,.ttl{font-family:"Arial Black",Arial;font-weight:900;letter-spacing:2px;
+text-transform:uppercase;color:#fff;text-shadow:0 0 8px var(--neon),0 0 24px rgba(168,85,247,.5)}
+.sys{position:relative;max-width:560px;margin:14px auto;padding:14px 16px;
+background:rgba(8,14,32,.88);border:1px solid var(--blue);border-radius:4px;
+box-shadow:0 0 18px rgba(56,189,248,.25),inset 0 0 30px rgba(56,189,248,.06);
+animation:pop .3s ease}
+.sys.red{border-color:var(--red);box-shadow:0 0 18px rgba(239,68,68,.3),inset 0 0 30px rgba(239,68,68,.07)}
+.sys.red .tag{color:var(--red)}
+.sys::before,.sys::after{content:"";position:absolute;width:14px;height:14px}
+.sys::before{top:-1px;left:-1px;border-top:2px solid var(--blue);border-left:2px solid var(--blue)}
+.sys::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue)}
+.sys.red::before{border-color:var(--red)}.sys.red::after{border-color:var(--red)}
+.tag{font-family:"Arial Black",Arial;letter-spacing:4px;color:var(--blue);font-size:11px;margin-bottom:6px}
+.sys p{line-height:1.5;font-size:14px}
+.sys .big{font-family:"Arial Black",Arial;font-size:17px;letter-spacing:1px;text-transform:uppercase}
+.num{color:var(--blue);text-shadow:0 0 6px rgba(56,189,248,.7);font-weight:700}
+.btn{display:block;width:100%;max-width:560px;margin:8px auto;padding:12px;
+background:rgba(168,85,247,.12);border:1px solid var(--neon);color:#f3e8ff;border-radius:6px;
+font-family:"Arial Black",Arial;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+box-shadow:0 0 12px rgba(168,85,247,.25)}
+.btn:active{transform:scale(.98)}
+.btn.b{border-color:var(--blue);background:rgba(56,189,248,.1);color:#e0f2fe}
+.btn.r{border-color:var(--red);background:rgba(239,68,68,.1);color:#fee2e2}
+.btn.g{border-color:#4ade80;background:rgba(74,222,128,.1);color:#dcfce7}
+.btn:disabled{opacity:.35;cursor:default}
+.bar{height:10px;background:#1e1b2e;border-radius:5px;overflow:hidden;margin:4px 0}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .4s}
+.hp i{background:linear-gradient(90deg,#ef4444,#f87171)}
+.xp i{background:linear-gradient(90deg,var(--blue),#7dd3fc)}
+.row{display:flex;gap:8px;align-items:center;max-width:560px;margin:8px auto}
+.row .btn{margin:0}
+.card{max-width:560px;margin:10px auto;padding:12px;background:rgba(20,18,34,.75);
+border:1px solid rgba(168,85,247,.3);border-radius:8px}
+.port{width:92px;height:120px;flex:none;border-radius:8px;overflow:hidden;
+border:2px solid var(--neon);box-shadow:0 0 14px rgba(168,85,247,.4)}
+.port svg{width:100%;height:100%;display:block}
+.rank{display:inline-block;padding:2px 10px;border-radius:4px;font-family:"Arial Black",Arial;
+font-size:12px;letter-spacing:1px;box-shadow:0 0 8px currentColor}
+.rE{color:#9ca3af;border:1px solid #6b7280}
+.rA{color:var(--gold);border:1px solid var(--gold)}
+.rBoss{color:var(--red);border:1px solid var(--red)}
+.log{max-width:560px;margin:10px auto;max-height:180px;overflow-y:auto;font-size:12px;
+line-height:1.5;background:rgba(0,0,0,.45);border:1px solid rgba(56,189,248,.25);padding:8px;border-radius:6px}
+.log div{padding:1px 0}.log .me{color:#7dd3fc}.log .foe{color:#fca5a5}.log .sys{color:#c4b5fd}
+.fighter{text-align:center;flex:1}
+.fighter .nm{font-size:12px;font-weight:700;letter-spacing:1px}
+.fighter.dead .nm{text-decoration:line-through;opacity:.4}
+.fighter .av{width:64px;height:78px;margin:4px auto;border-radius:8px;overflow:hidden}
+.fighter .av svg{width:100%;height:100%}
+.gl{max-width:560px;margin:10px auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gl .card{margin:0;padding:8px;text-align:center}
+.gl .port{width:100%;height:110px}
+@media(max-width:420px){.gl{grid-template-columns:repeat(2,1fr)}}
+.aura0{box-shadow:0 0 14px rgba(168,85,247,.6)}.aura1{box-shadow:0 0 14px rgba(56,189,248,.5)}
+.aura2{box-shadow:0 0 14px rgba(74,222,128,.5)}.aura3{box-shadow:0 0 14px rgba(239,68,68,.6)}
+.aura4{box-shadow:0 0 14px rgba(251,191,36,.5)}.aura5{box-shadow:0 0 14px rgba(148,163,184,.5)}
+.dim{color:#94a3b8;font-size:12px}
+hr{border:0;border-top:1px solid rgba(168,85,247,.25);margin:10px 0}
+</style></head><body><div id="app"></div>
+<script>
+"use strict";
+var S=null, T=null, CD=0;
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ")}
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function save(){try{localStorage.setItem("sl_neon_"+S.nick,JSON.stringify(S))}catch(e){}}
+function saveCode(){try{return btoa(unescape(encodeURIComponent(JSON.stringify(S))))}catch(e){return""}}
+function fresh(nick){return{nick:nick,lvl:0,xp:0,silver:0,crys:0,bosses:0,kills:0,
+hpMax:60,atk:3,potionS:0,potionB:0,upAtk:0,upHp:0,seen:0}}
+function xpNeed(l){return l<1?1000000:1000000*l}
+
+/* --- векторные герои --- */
+function hero(col,aura,kind){
+ var g=kind==="boss"?'<circle cx="50" cy="34" r="2.5" fill="#fff"/><circle cx="58" cy="34" r="2.5" fill="#fff"/>':
+ '<circle cx="49" cy="34" r="2.5" fill="#fff"/><circle cx="57" cy="34" r="2.5" fill="#fff"/>';
+ return '<svg viewBox="0 0 108 144" xmlns="http://www.w3.org/2000/svg">'+
+ '<rect width="108" height="144" fill="'+(kind==="boss"?"#1a0508":kind==="gob"?"#0a1408":"#12081f")+'"/>'+
+ '<ellipse cx="54" cy="136" rx="34" ry="6" fill="'+aura+'" opacity=".5"/>'+
+ '<path d="M20 144 L34 96 L40 70 L68 70 L74 96 L88 144 Z" fill="'+col+'" opacity=".9"/>'+
+ '<rect x="46" y="58" width="16" height="16" rx="4" fill="'+col+'"/>'+
+ '<circle cx="54" cy="34" r="15" fill="#f3d5b0"/>'+
+ '<path d="M39 30 Q54 14 69 30 L69 24 Q54 10 39 24 Z" fill="#151022"/>'+
+ g+'<path d="M24 100 L18 144" stroke="'+col+'" stroke-width="7" stroke-linecap="round" fill="none"/>'+
+ '<path d="M84 100 L90 144" stroke="'+col+'" stroke-width="7" stroke-linecap="round" fill="none"/>'+
+ (kind==="boss"?'<path d="M54 64 L60 84 L54 80 L48 84 Z" fill="'+aura+'"/>':
+ '<rect x="50" y="74" width="8" height="8" fill="'+aura+'" opacity=".8"/>')+
+ '<rect width="108" height="144" fill="url(#v)"/><defs><radialGradient id="v" cx=".5" cy=".35" r=".9">'+
+ '<stop offset=".6" stop-color="transparent"/><stop offset="1" stop-color="rgba(0,0,0,.75)"/></radialGradient></defs></svg>';
+}
+function mob(color,aura){
+ return '<svg viewBox="0 0 108 144" xmlns="http://www.w3.org/2000/svg">'+
+ '<rect width="108" height="144" fill="#0d0b09"/>'+
+ '<ellipse cx="54" cy="136" rx="30" ry="6" fill="'+aura+'" opacity=".45"/>'+
+ '<path d="M26 144 L36 96 L44 74 L64 74 L72 96 L82 144 Z" fill="#5a6b3a"/>'+
+ '<rect x="47" y="60" width="14" height="16" rx="3" fill="#7a9440"/>'+
+ '<circle cx="54" cy="40" r="16" fill="#8bc34a"/>'+
+ '<path d="M38 36 Q30 20 44 30 Q54 18 64 30 Q78 20 70 36 Z" fill="#6d8c33"/>'+
+ '<path d="M30 40 Q22 30 38 34 Z" fill="#8bc34a"/><path d="M78 40 Q86 30 70 34 Z" fill="#8bc34a"/>'+
+ '<circle cx="48" cy="40" r="3" fill="#ff5722"/><circle cx="60" cy="40" r="3" fill="#ff5722"/>'+
+ '<path d="M46 50 L50 53 L54 50 L58 53 L62 50" stroke="#33691e" stroke-width="2" fill="none"/>'+
+ '<path d="M36 44 L20 66" stroke="#8d6e63" stroke-width="4" stroke-linecap="round"/>'+
+ '<path d="M18 62 L24 70" stroke="#b0bec5" stroke-width="5" stroke-linecap="round"/>'+
+ '<rect width="108" height="144" fill="url(#w)"/><defs><radialGradient id="w" cx=".5" cy=".4" r=".95">'+
+ '<stop offset=".55" stop-color="transparent"/><stop offset="1" stop-color="rgba(0,0,0,.8)"/></radialGradient></defs></svg>';
+}
+var MOB=mob("#8bc34a","#7cff6b"), BOSSG=mob("#8bc34a","#ff4b3e"), BOSST=hero("#1d1230","#ff2d55","boss");
+
+/* --- экраны --- */
+function show(html){$("app").innerHTML=html;window.scrollTo(0,0)}
+function head(){return '<div class="card" style="display:flex;gap:12px;align-items:center">'+
+ '<div class="port aura0" onclick="profile()">'+hero("#1d1230","#a855f7")+'</div>'+
+ '<div style="flex:1"><div class="ttl" style="font-size:15px">'+esc(S.nick)+'</div>'+
+ '<div class="dim">Уровень <span class="num">'+S.lvl+'</span> · Ранг <span class="rank rA">A</span></div>'+
+ '<div class="dim">Серебро: <span class="num">'+fmt(S.silver)+'</span> · Кристаллы: <span class="num">'+S.crys+'</span></div>'+
+ '<div class="bar xp"><i style="width:'+Math.min(100,S.xp/xpNeed(S.lvl)*100)+'%"></i></div></div></div>'}
+function back(){return '<button class="btn b" onclick="city()">В ГОРОД</button>'}
+
+function intro(step){
+ var w=[
+ '<div class="sys"><div class="tag">СИСТЕМА</div><p class="big">Пробуждение зафиксировано</p><p>Вы открываете глаза. Белый потолок больницы. В голове — голос, которого не может быть.</p></div>',
+ '<div class="sys"><div class="tag">СИСТЕМА</div><p>Резонанс маны: <span class="num">НЕНОРМАЛЬНЫЙ</span></p><p>Все показатели зашкаливают. Приборы doctors сходят с ума.</p></div>',
+ '<div class="sys red"><div class="tag">СИСТЕМА</div><p class="big">Двойное пробуждение</p><p>Ранг: <span class="num">ERROR</span> → <span class="num">[ДАННЫЕ СКРЫТЫ]</span></p></div>',
+ '<div class="sys"><div class="tag">СИСТЕМА</div><p class="big">Класс: ТЕНЕВОЙ МОНАРХ</p><p>Статус: <span class="num">ЗАПЕЧАТАН</span>. Путь открыт только наверх — через врата.</p></div>'][step];
+ show('<div style="text-align:center;margin-top:20px"><h2 style="font-size:20px">Пробуждение</h2></div>'+w+
+ (step<3?'<button class="btn" onclick="intro('+(step+1)+')">ДАЛЕЕ</button><button class="btn b" onclick="intro(4)">ПРОПУСТИТЬ</button>'
+ :'<div class="sys"><div class="tag">СИСТЕМА</div><p>Назовите себя, охотник.</p><input id="nick" placeholder="Ваш ник" style="width:100%;padding:10px;margin-top:8px;background:#0b0b18;border:1px solid var(--neon);color:#fff;border-radius:6px"></div><button class="btn" onclick="reg()">ВОЙТИ В СИСТЕМУ</button>'));
+}
+function reg(){
+ var n=($("nick").value||"Охотник").trim().slice(0,16);
+ S=fresh(n);S.seen=1;save();city();
+}
+function loadGame(){
+ var n=prompt("Ник сохранения:");if(!n)return;
+ try{S=JSON.parse(localStorage.getItem("sl_neon_"+n.trim()));if(S)city();else alert("Сохранение не найдено")}catch(e){alert("Ошибка чтения")}
+}
+
+function city(){
+ show(head()+
+ '<button class="btn" onclick="gates()">◆ ВРАТА ПОДЗЕМЕЛЬЯ</button>'+
+ '<button class="btn r" onclick="raid()">◆ РЕЙД ГИЛЬДИИ «НЕОНОВЫЙ КЛЫК»</button>'+
+ '<button class="btn b" onclick="shop()">◆ МАГАЗИН</button>'+
+ '<button class="btn b" onclick="auction()">◆ ЧЁРНЫЙ АУКЦИОН</button>'+
+ '<button class="btn b" onclick="skins()">◆ ГАЛЕРЕЯ ОБРАЗОВ</button>'+
+ '<button class="btn" onclick="manaCheck()">◆ ПРОВЕРИТЬ МАНУ</button>'+
+ '<button class="btn b" onclick="profile()">◆ ПРОФИЛЬ</button>'+
+ (S.lvl<1?'<p class="dim" style="text-align:center;max-width:560px;margin:12px auto">Вы — нулёвка. В пачку вас берут за численность, основную работу делает лидер рейда. Каждый убитый моб — <span class="num">+1 опыт</span>. До 1 уровня нужно <span class="num">'+fmt(xpNeed(0))+'</span>.</p>':""));
+}
+
+function manaCheck(){
+ show('<div class="sys"><div class="tag">СИСТЕМА</div>'+(S.lvl<1?
+ '<p class="big">Анализ маны</p><p>Мана: <span class="num">0 / 0</span></p><p>Пробуждение: <span class="num">НЕ ПОДТВЕРЖДЕНО</span></p><p class="dim">«Наберитесь опыта — и вы услышите меня».</p>':
+ '<p class="big">Анализ маны</p><p>Мана: <span class="num">'+fmt(S.lvl*1000)+' / '+fmt(S.lvl*1000)+'</span></p><p>Пробуждение: <span class="num">ПОДТВЕРЖДЕНО</span></p><p class="dim">Резонанс растёт с каждым уровнем.</p>')+'</div>'+back());
+}
+
+function profile(){
+ show('<div class="ttl" style="text-align:center;font-size:16px;margin-top:8px">Профиль охотника</div>'+
+ '<div class="sys"><div class="tag">СТАТУС</div>'+
+ '<p>'+esc(S.nick)+' · Ранг <span class="rank rA">A</span></p>'+
+ '<p>Уровень: <span class="num">'+S.lvl+'</span> · Опыт: <span class="num">'+fmt(S.xp)+' / '+fmt(xpNeed(S.lvl))+'</span> ('+(S.xp/xpNeed(S.lvl)*100).toFixed(4)+'%)</p>'+
+ '<div class="bar xp"><i style="width:'+Math.min(100,S.xp/xpNeed(S.lvl)*100)+'%"></i></div>'+
+ '<p>HP: <span class="num">'+S.hpMax+'</span> · Атака: <span class="num">'+(S.atk+S.upAtk)+'</span></p>'+
+ '<p>Серебро: <span class="num">'+fmt(S.silver)+'</span> · Кристаллы: <span class="num">'+S.crys+'</span></p>'+
+ '<p>Повержено мобов: <span class="num">'+S.kills+'</span> · Повержено боссов: <span class="num">'+S.bosses+'</span></p></div>'+
+ '<button class="btn" onclick="storyReplay()">ИСТОРИЯ ПРОБУЖДЕНИЯ</button>'+
+ '<button class="btn b" onclick="var c=saveCode();prompt(\'Код сейва — скопируйте:\',c)">СКОПИРОВАТЬ КОД СЕЙВА</button>'+
+ '<button class="btn b" onclick="restore()">ВОЙТИ ПО КОДУ СЕЙВА</button>'+
+ back());
+}
+function storyReplay(){intro(0)}
+function restore(){
+ var c=prompt("Вставьте код сейва:");if(!c)return;
+ try{S=JSON.parse(decodeURIComponent(escape(atob(c.trim()))));save();city()}catch(e){alert("Код повреждён")}
+}
+
+/* --- врата --- */
+var RANKS=[["E",0,2],["D",5,2],["C",10,3],["B",18,3],["A",30,3]];
+function gates(){
+ var b=RANKS.map(function(r){var lock=S.lvl<r[1];
+ return '<button class="btn'+(r[0]==="E"?"":" b")+'" '+(lock?"disabled":"")+' onclick="enter(\''+r[0]+'\')">ВРАТА РАНГА '+r[0]+(lock?" · нужен ур. "+r[1]:"")+'</button>'}).join("");
+ show(head()+'<div class="ttl" style="text-align:center;font-size:16px">Врата подземелья</div>'+b+back());
+}
+function enter(rank){
+ var waves=RANKS.filter(function(r){return r[0]===rank})[0][2];
+ T={mode:"solo",rank:rank,wave:1,waves:waves,php:S.hpMax,ph:S.hpMax,
+ foe:{n:"Гоблин-подросток",hp:30+RANKS.findIndex(function(r){return r[0]===rank})*15,mhp:30+RANKS.findIndex(function(r){return r[0]===rank})*15,atk:4+RANKS.findIndex(function(r){return r[0]===rank})*2,xp:1,sil:100,boss:false},
+ bossRoll:false};
+ show('<div class="sys red"><div class="tag">СИСТЕМА</div><p>Врата ранга '+rank+' открыты. Дрожащий воздух. Пахнет землёй и железом.</p></div><div id="f"></div>');
+ nextFoe();
+}
+function nextFoe(){
+ var fb=T.foe;
+ showFoe('<div class="sys"><div class="tag">СИСТЕМА</div><p>Волна '+T.wave+' из '+T.waves+'. Пачка гоблинов шуршит в темноте...</p></div>');
+}
+function showFoe(extra){
+ var f=T.foe;
+ show(extra+
+ '<div class="card"><div class="row"><div class="fighter"><div class="nm" style="color:#7dd3fc">'+esc(S.nick)+'</div>'+
+ '<div class="av aura0">'+hero("#1d1230","#a855f7")+'</div>'+
+ '<div class="bar hp"><i style="width:'+(T.php/S.hpMax*100)+'%"></i></div>'+
+ '<div class="dim">HP '+T.php+' / '+S.hpMax+'</div></div>'+
+ '<div class="fighter"><div class="nm" style="color:#fca5a5">'+esc(f.n)+(f.boss?' <span class="rank rBoss">БОСС</span>':"")+'</div>'+
+ '<div class="av '+(f.boss?"aura3":"aura2")+'">'+(f.boss&&f.m===2?BOSST:f.boss?BOSSG:MOB)+'</div>'+
+ '<div class="bar hp"><i style="width:'+(f.hp/f.mhp*100)+'%"></i></div>'+
+ '<div class="dim">HP '+Math.max(0,f.hp)+' / '+f.mhp+'</div></div></div></div>'+
+ '<div class="log" id="log"></div>'+
+ '<button class="btn r" onclick="soloHit()">АТАКА</button>'+
+ '<button class="btn g" onclick="usePot()" '+(S.potionS+S.potionB<1?"disabled":"")+'>ЗЕЛЬЕ ('+(S.potionS+S.potionB)+')</button>'+
+ '<button class="btn b" onclick="flee()">ОТСТУПИТЬ</button>');
+}
+function slog(t,c){var l=$("log");if(!l)return;var d=document.createElement("div");d.className=c||"";d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight}
+function gain(xp,sil){
+ S.xp+=xp;S.silver+=sil;
+ if(S.xp>=xpNeed(S.lvl)){S.xp-=xpNeed(S.lvl);S.lvl++;S.hpMax+=20;S.atk+=3;
+ slog("◆ УРОВЕНЬ! Теперь вы — уровень "+S.lvl+". Пробуждение подтверждено!","sys")}
+ save();
+}
+function soloHit(){
+ if(T.dead)return;var f=T.foe,me=S.atk+S.upAtk+ri(0,2);
+ f.hp-=me;slog("Вы наносите "+me+" урона.","me");
+ if(f.hp<=0){return winFoe()}
+ if(f.boss&&f.m===2&&f.hp<f.mhp*0.5&&!f.rage){f.rage=1;slog("◆ Глаза Безумца вспыхнули алым! ЯРОСТЬ!","sys")}
+ var fa=Math.round(f.atk*(f.rage?1.25:1)*(.8+Math.random()*.4));
+ T.php-=fa;slog(f.n+" бьёт вас на "+fa+".","foe");
+ if(T.php<=0){T.dead=1;save();
+ return show('<div class="sys red"><div class="tag">СИСТЕМА</div><p class="big">ВЫ ПАЛИ</p><p>Система откатывает сознание к городу. Опыт за забег сгорел.</p></div>'+back())}
+ showFoe("");
+}
+function winFoe(){
+ var f=T.foe;
+ S.kills++;gain(f.xp,f.sil);
+ if(Math.random()<0.1)S.crys++;
+ slog("◆ "+f.n+" повержен! +"+f.xp+" опыта, +"+f.sil+" серебра.","sys");save();
+ if(f.boss){S.bosses++;save();
+  return show('<div class="sys"><div class="tag">СИСТЕМА</div><p class="big">БОСС ПОВЕРЖЕН</p><p>Награда: <span class="num">+'+f.xp+' опыта</span>, <span class="num">+'+fmt(f.sil)+' серебра</span>, кристаллы: <span class="num">+'+f.cr+'</span></p></div>'+back());}
+ if(T.wave<T.waves){T.wave++;nextFoe();return}
+ return bossRoll();
+}
+function usePot(){
+ if(S.potionB>0){S.potionB--;T.php=Math.min(S.hpMax,T.php+150);slog("Большое зелье: +150 HP","sys")}
+ else if(S.potionS>0){S.potionS--;T.php=Math.min(S.hpMax,T.php+50);slog("Малое зелье: +50 HP","sys")}
+ save();showFoe("");
+}
+function flee(){city()}
+function bossRoll(){
+ var r=Math.random();
+ if(r<0.05){T.foe={n:"Безумец Подземелья",hp:300,mhp:300,atk:15,xp:100,sil:10000,boss:true,m:2,cr:2,cr2:3,rage:0};
+  return showFoe('<div class="sys red"><div class="tag">ВНИМАНИЕ</div><p class="big">◆ БОСС</p><p>Из тьмы поднимается ОН. Рваное худи, кровавые ладони, алые глаза — а за спиной ухмыляется гигантский череп.</p></div>');}
+ if(r<0.15){T.foe={n:"Гоблин-вожак",hp:80,mhp:80,atk:8,xp:50,sil:5000,boss:true,m:1,cr:1,rage:0};
+  return showFoe('<div class="sys red"><div class="tag">ВНИМАНИЕ</div><p class="big">◆ БОСС</p><p>Пачка расступается. Выходит гигантский гоблин с алой аурой — Вожак.</p></div>');}
+ show('<div class="sys"><div class="tag">СИСТЕМА</div><p class="big">Врата очищены</p><p>Босс не появился — глубина хранит тишину. Забег завершён.</p><p>Всего: опыт <span class="num">'+fmt(S.xp)+'</span>, серебро <span class="num">'+fmt(S.silver)+'</span></p></div>'+back());
+}
+
+/* --- рейд --- */
+function raid(){
+ T={mode:"raid",foes:[{n:"Гоблин 1",hp:40,mhp:40,atk:6,boss:false},{n:"Гоблин 2",hp:40,mhp:40,atk:6,boss:false},{n:"Гоблин 3",hp:40,mhp:40,atk:6,boss:false}],
+ kairo:{n:"Кайро [ЛИДЕР]",hp:500,mhp:500,atk:40},
+ hanna:{n:"Ханна",hp:200,mhp:200,atk:12},morro:{n:"Морро",hp:180,mhp:180,atk:10},
+ php:S.hpMax,cd:0,dead:false};
+ show('<div class="sys red"><div class="tag">СИСТЕМА</div><p>Гильдия входит во врата. Кайро поднимает руку: «За мной. Вы — прикрытие, не лезьте под удар».</p></div><div id="f"></div>');
+ raidTick(0);
+}
+function raidView(extra){
+ var fg=T.foes.map(function(f,i){return '<div class="fighter'+(f.hp<=0?" dead":"")+'">'+
+ '<div class="nm" style="color:#fca5a5">'+esc(f.n)+'</div><div class="av aura2">'+MOB+'</div>'+
+ '<div class="bar hp"><i style="width:'+Math.max(0,f.hp/f.mhp*100)+'%"></i></div><div class="dim">'+Math.max(0,f.hp)+'/'+f.mhp+'</div></div>'}).join("");
+ function ally(u,c,a){return '<div class="fighter'+(u.hp<=0?" dead":"")+'"><div class="nm" style="color:'+c+'">'+esc(u.n)+'</div><div class="av '+a+'">'+hero("#1d1230",a==="aura0"?"#a855f7":a==="aura4"?"#fbbf24":"#38bdf8")+'</div><div class="bar hp"><i style="width:'+Math.max(0,u.hp/u.mhp*100)+'%"></i></div><div class="dim">'+Math.max(0,u.hp)+'/'+u.mhp+'</div></div>'}
+ show(extra+'<div class="card"><div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">'+
+ ally(T.kairo,"#fbbf24","aura4")+ally({n:S.nick,hp:T.php,mhp:S.hpMax},"#7dd3fc","aura0")+ally(T.hanna,"#7dd3fc","aura1")+ally(T.morro,"#7dd3fc","aura1")+
+ '</div><hr><div style="display:flex
